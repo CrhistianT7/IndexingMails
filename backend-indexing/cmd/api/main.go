@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 const port = 8080
@@ -13,9 +14,8 @@ type application struct {
 }
 
 func main() {
-	// args := os.Args
-	// fmt.Println("hello from backend")
-	// fmt.Println(args[1])
+	args := os.Args
+	fmt.Println(args[1])
 	// _, err := os.ReadDir("../../" + args[1] + "/maildir")
 	// if err != nil {
 	// 	log.Fatal(err)

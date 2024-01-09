@@ -26,3 +26,7 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)
 }
+
+func (app *application) Search(w http.ResponseWriter, r *http.Request) {
+
+}
