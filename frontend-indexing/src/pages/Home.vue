@@ -21,10 +21,8 @@ const searchTerm = async () => {
   console.log(termToSearch.value)
   console.log("searching for this thing")
   try {
-    const response = await searchEmails()
-    //const response = await axios.get('https://jsonplaceholder.org/users/1')
+    const response = await searchEmails(termToSearch.value.term)
     console.log(response)
-    //matchingEmails.value = response
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("API error: ", error.message)
