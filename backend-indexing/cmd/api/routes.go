@@ -8,14 +8,16 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	// create a roouter mux
-	mux := chi.NewRouter()
+	// create a router mux
+	router := chi.NewRouter()
 
-	mux.Use(middleware.Recoverer)
-	mux.Use(app.enableCORS)
+	router.Use(middleware.Recoverer)
+	router.Use(app.enableCORS)
 
-	mux.Get("/", app.Home)
-	mux.Get("/search", app.Search)
+	router.Get("/", app.Home)
+	router.Post("/index", app.Index)
+	router.Get("/search", app.Search)
+	//router.Get("/search/{id}", app.Search2)
 
-	return mux
+	return router
 }
