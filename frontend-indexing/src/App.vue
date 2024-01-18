@@ -1,10 +1,9 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import Header from './components/Header.vue';
-import Searcher from './components/Searcher.vue';
+import Home from './pages/Home.vue';
 </script>
 
 <template>
-  <Header />
-  <Searcher />
+  <div class="container mx-auto mt-20">
+    <Home/>
+  </div>
 </template>

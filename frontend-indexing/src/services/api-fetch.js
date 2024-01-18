@@ -5,19 +5,28 @@ export const api = axios.create({
 })
 
 export const searchEmails = (searchTerm) => {
-  return [
-    {
-      subject: "subject 1",
-      from: "Juan",
-      to: "Crhis",
-      body: "some random text"
-    },
-    {
-      subject: "subject 2",
-      from: "Fer",
-      to: "Maria",
-      body: "Todas las mujeres mienten"
-    },
-  ]
-  //return api.get(`/search?value=${searchTerm}`)
+  // return [
+  //   {
+  //     id: 1,
+  //     subject: "subject 1",
+  //     from: "Juan",
+  //     to: "Crhis",
+  //     body: "some random text"
+  //   },
+  //   {
+  //     id: 2,
+  //     subject: "subject 2",
+  //     from: "Fer",
+  //     to: "Maria",
+  //     body: "Todas las mujeres mienten"
+  //   },
+  //   {
+  //     id: 3,
+  //     subject: "subject 3",
+  //     from: "Jose",
+  //     to: "crhis",
+  //     body: "Hello"
+  //   },
+  // ]
+  return api.get(`/search?value=${searchTerm}`)
 }
