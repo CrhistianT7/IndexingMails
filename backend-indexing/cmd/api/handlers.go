@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -27,6 +28,15 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
-func (app *application) Search(w http.ResponseWriter, r *http.Request) {
-
+func (app *application) Index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "hello from index")
 }
+
+func (app *application) Search(w http.ResponseWriter, r *http.Request) {
+	search_value := r.URL.Query().Get("value")
+	fmt.Fprintf(w, "Searching "+search_value)
+}
+
+// func (app *application) Search2(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Fprintf(w, chi.URLParam(r, "id"))
+// }
