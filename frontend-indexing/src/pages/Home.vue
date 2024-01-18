@@ -18,11 +18,9 @@ const matchingEmails = ref([])
 // })
 
 const searchTerm = async () => {
-  console.log(termToSearch.value)
-  console.log("searching for this thing")
   try {
     const response = await searchEmails(termToSearch.value.term)
-    console.log(response)
+    console.log("response: ", response)
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("API error: ", error.message)
