@@ -17,7 +17,6 @@ func (app *application) routes() http.Handler {
 	router.Get("/", app.Home)
 	router.Post("/index", app.Index)
 	router.Get("/search", app.Search)
-	//router.Get("/search/{id}", app.Search2)
 
 	return router
 }
