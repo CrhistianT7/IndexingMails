@@ -17,15 +17,15 @@ const handleEmailSelect = (id) => {
 }
 
 const emailBody = computed(() => {
-  const email = props.matchingEmails.filter(x => x.id === emailSelected?.value)
-  return email[0].body
+  const email = props.matchingEmails.filter(x => x._id === emailSelected?.value)
+  return email[0]._source.Body
 })
 </script>
 
 <template>
   <div class="md:flex mt-8 gap-8 bg-white p-4 rounded-md">
     <div class="md:w-1/2 border rounded-xl shadow-sm p-4">
-      <table class="table-auto w-full">
+      <table class="table-fixed w-full">
         <thead class="rounded-xl">
           <tr class="bg-indigo-500 text-white">
             <th class="font-bold p-2 border-b text-left rounded-tl-xl">
@@ -37,25 +37,25 @@ const emailBody = computed(() => {
         </thead>
         <tbody>
           <tr
-            :class="[isSelectedd(email.id) ? 'bg-indigo-300' : 'odd:bg-gray-200']"
+            :class="[isSelectedd(email._id) ? 'bg-indigo-300' : 'odd:bg-gray-200']"
             class="hover:bg-indigo-600 hover:text-white cursor-pointer"
-            @click="handleEmailSelect(email.id)"
+            @click="handleEmailSelect(email._id)"
             v-for="email in matchingEmails"
           >
-            <td class="w-1/2">
-              {{email.subject}}
+            <td class="w-1/2 break-all px-3 py-2">
+              {{email._source.subject}}
             </td>
-            <td class="w-1/4">{{email.from}}</td>
-            <td class="w-1/4">{{email.to}}</td>
+            <td class="w-1/4 break-all px-3 py-2">{{email._source.from}}</td>
+            <td class="w-1/4 break-all px-3 py-2">{{email._source.to}}</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="md:w-1/2 border rounded-xl shadow-sm p-4 flex justify-center items-center font-semibold">
+    <div class="md:w-1/2 border rounded-xl shadow-sm p-4 flex justify-center items-center font-semibold flex-wrap overflow-auto max-h-96">
       <div v-if="!emailSelected">
         Click in one mail to see details
       </div>
-      <div v-else>
+      <div v-else class="w-full break-all">
         {{emailBody}}
       </div>
     </div>

@@ -7,20 +7,17 @@ import Results from "../components/Results.vue"
 import { searchEmails } from "../services/api-fetch"
 
 const loading = ref(false)
-//
+
 const termToSearch = ref({
   term: "",
 })
 const matchingEmails = ref([])
 
-// onMounted(() => {
-//   matchingEmails.value = searchEmails("algo")
-// })
-
 const searchTerm = async () => {
+  matchingEmails.value = []
   try {
     const response = await searchEmails(termToSearch.value.term)
-    console.log("response: ", response)
+    matchingEmails.value = response.data.hits.hits
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("API error: ", error.message)

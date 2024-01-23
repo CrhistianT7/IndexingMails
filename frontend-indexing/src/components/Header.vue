@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <header>
+  <header class="flex items-center flex-col">
     <h1 class="font-black text-5xl text-center">Email Searching</h1>
     <div class="mt-12 lg:flex justify-center">
       <form

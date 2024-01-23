@@ -3,7 +3,7 @@ import Home from './pages/Home.vue';
 </script>
 
 <template>
-  <div class="container mx-auto mt-20">
+  <div class="container mx-auto mt-5">
     <Home/>
   </div>
 </template>
