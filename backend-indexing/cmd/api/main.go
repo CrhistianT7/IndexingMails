@@ -43,23 +43,7 @@ func main() {
 
 	if len(args) > 2 && args[2] == "index" {
 		fmt.Println("Indexing...")
-		database_path := "../../" + args[1] + "/maildir/"
-		userList := listSubFolders(database_path)
-		contador := 0
-		for _, user := range userList {
-			folders_per_user := listSubFolders(database_path + user)
-			fmt.Println(user, folders_per_user)
-			for _, folder := range folders_per_user {
-				mails_list := list_mails(database_path + user + "/" + folder + "/")
-				for _, mail_file := range mails_list {
-					mail_content, _ := os.Open(database_path + user + "/" + folder + "/" + mail_file)
-					lines := bufio.NewScanner(mail_content)
-					contador++
-					index_data(parse_data(lines, contador))
-					mail_content.Close()
-				}
-			}
-		}
+		index(args[1])
 	}
 
 	server := &http.Server{
@@ -72,6 +56,27 @@ func main() {
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func index(database string) {
+	fmt.Println("Indexing...")
+	database_path := "../../" + database + "/maildir/"
+	userList := listSubFolders(database_path)
+	contador := 0
+	for _, user := range userList {
+		folders_per_user := listSubFolders(database_path + user)
+		fmt.Println(user, folders_per_user)
+		for _, folder := range folders_per_user {
+			mails_list := list_mails(database_path + user + "/" + folder + "/")
+			for _, mail_file := range mails_list {
+				mail_content, _ := os.Open(database_path + user + "/" + folder + "/" + mail_file)
+				lines := bufio.NewScanner(mail_content)
+				contador++
+				index_data(parse_data(lines, contador))
+				mail_content.Close()
+			}
+		}
 	}
 }
 
