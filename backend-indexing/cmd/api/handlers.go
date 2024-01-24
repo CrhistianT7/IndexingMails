@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -21,18 +19,13 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		Version: "1.0.0",
 	}
 
-	out, err := json.Marshal(payload)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
 func (app *application) Index(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "hello from index")
+	fmt.Println("Indexing...")
 	// Here it should start indexing
 }
 
@@ -40,7 +33,7 @@ func (app *application) Search(w http.ResponseWriter, r *http.Request) {
 	search_value := r.URL.Query().Get("value")
 	gte_time := time.Now().UTC().Add(-time.Minute * time.Duration(30)).Format("2006-01-02T15:04:05Z07:00")
 	lt_time := time.Now().UTC().Format("2006-01-02T15:04:05Z07:00")
-	zincsearch_url := app.ZincsearchHost + "/es/" + "enronJELM" + "/_search"
+	zincsearch_url := app.ZincsearchHost + "/es/" + app.ZincsearchIndex + "/_search"
 
 	query := fmt.Sprintf(`{
 	  "query": {
@@ -81,7 +74,8 @@ func (app *application) Search(w http.ResponseWriter, r *http.Request) {
 
 	req, err := http.NewRequest("POST", zincsearch_url, strings.NewReader(query))
 	if err != nil {
-		log.Fatal(err)
+		app.errorJson(w, err)
+		return
 	}
 
 	req.SetBasicAuth("admin", "Complexpass#123")
@@ -89,16 +83,18 @@ func (app *application) Search(w http.ResponseWriter, r *http.Request) {
 
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		app.errorJson(w, err)
+		return
 	}
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		app.errorJson(w, err)
+		return
 	}
 
-	fmt.Println("Body")
-	fmt.Println(string(body))
-
+	//_ = app.writeJSON(w, http.StatusOK, body)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }
