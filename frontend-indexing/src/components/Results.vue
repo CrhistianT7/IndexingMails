@@ -23,7 +23,9 @@ const emailBody = computed(() => {
 </script>
 
 <template>
-  <div class="md:flex mt-8 gap-8 bg-white p-4 rounded-md">
+  <div>
+    <div class="bg-white rounded-md p-1 w-fit">Total: {{matchingEmails.length}}</div>
+    <div class="md:flex mt-8 gap-8 bg-white p-4 rounded-md">
     <div class="md:w-1/2 border rounded-xl shadow-sm p-4">
       <table class="table-fixed w-full">
         <thead class="rounded-xl">
@@ -55,10 +57,11 @@ const emailBody = computed(() => {
       <div v-if="!emailSelected">
         Click in one mail to see details
       </div>
-      <div v-else class="w-full break-all">
+      <div v-else class="w-full break-all font-light">
         {{emailBody}}
       </div>
     </div>
+  </div>
   </div>
 </template>
 <CarritoCard v-for="carritoItem in carrito" :carrito-item="carritoItem" @incrementar-cantidad="incrementarCantidad" @decrementar-cantidad="decrementarCantidad" @eliminar-plato="eliminarPlato"/>
