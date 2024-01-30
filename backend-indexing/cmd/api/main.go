@@ -104,7 +104,6 @@ func listSubFolders(data_base_name string) []string {
 func list_mails(folder_name string) ([]string, error) {
 	files, err := os.ReadDir(folder_name)
 	if err != nil {
-		//log.Fatal("Unable to read the folder because of ", err)
 		return []string{}, err
 	}
 
@@ -117,71 +116,72 @@ func list_mails(folder_name string) ([]string, error) {
 
 func parse_data(data_lines *bufio.Scanner, id int) models.Email {
 	var data models.Email
+
 	for data_lines.Scan() {
 		data.ID = strconv.Itoa(id)
 		if strings.Contains(data_lines.Text(), "Message-ID:") {
-			if 11 <= len(data_lines.Text()) {
-				data.Message_ID = data_lines.Text()[11:]
+			if 12 <= len(data_lines.Text()) {
+				data.Message_ID = data_lines.Text()[12:]
 			} else {
 				data.Message_ID = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Date:") {
-			if 5 <= len(data_lines.Text()) {
-				data.Date = data_lines.Text()[5:]
+			if 6 <= len(data_lines.Text()) {
+				data.Date = data_lines.Text()[6:]
 			} else {
 				data.Date = ""
 			}
-		} else if strings.Contains(data_lines.Text(), "From:") {
+		} else if strings.Contains(data_lines.Text(), "From:") && !strings.Contains(data_lines.Text(), "X-From:") {
 			if 6 <= len(data_lines.Text()) {
 				data.From = data_lines.Text()[6:]
 			} else {
 				data.From = ""
 			}
-		} else if strings.Contains(data_lines.Text(), "To:") {
+		} else if strings.Contains(data_lines.Text(), "To:") && !strings.Contains(data_lines.Text(), "X-To:") {
 			if 4 <= len(data_lines.Text()) {
 				data.To = data_lines.Text()[4:]
 			} else {
 				data.To = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Subject:") {
-			if 8 <= len(data_lines.Text()) {
-				data.Subject = data_lines.Text()[8:]
+			if 9 <= len(data_lines.Text()) {
+				data.Subject = data_lines.Text()[9:]
 			} else {
 				data.Subject = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Cc:") {
-			if 3 <= len(data_lines.Text()) {
-				data.Cc = data_lines.Text()[3:]
+			if 4 <= len(data_lines.Text()) {
+				data.Cc = data_lines.Text()[4:]
 			} else {
 				data.Cc = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Mime-Version:") {
-			if 9 <= len(data_lines.Text()) {
-				data.Mime_Version = data_lines.Text()[9:]
+			if 14 <= len(data_lines.Text()) {
+				data.Mime_Version = data_lines.Text()[14:]
 			} else {
 				data.Mime_Version = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Content-Type:") {
-			if 9 <= len(data_lines.Text()) {
-				data.Content_Type = data_lines.Text()[9:]
+			if 14 <= len(data_lines.Text()) {
+				data.Content_Type = data_lines.Text()[14:]
 			} else {
 				data.Content_Type = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "Content-Transfer-Encoding:") {
-			if 9 <= len(data_lines.Text()) {
-				data.Content_Transfer_Encoding = data_lines.Text()[9:]
+			if 27 <= len(data_lines.Text()) {
+				data.Content_Transfer_Encoding = data_lines.Text()[27:]
 			} else {
 				data.Content_Transfer_Encoding = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-From:") {
-			if 9 <= len(data_lines.Text()) {
-				data.X_From = data_lines.Text()[9:]
+			if 8 <= len(data_lines.Text()) {
+				data.X_From = data_lines.Text()[8:]
 			} else {
 				data.X_From = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-To:") {
-			if 9 <= len(data_lines.Text()) {
-				data.X_To = data_lines.Text()[9:]
+			if 6 <= len(data_lines.Text()) {
+				data.X_To = data_lines.Text()[6:]
 			} else {
 				data.X_To = ""
 			}
@@ -192,26 +192,26 @@ func parse_data(data_lines *bufio.Scanner, id int) models.Email {
 				data.X_cc = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-bcc:") {
-			if 6 <= len(data_lines.Text()) {
-				data.X_bcc = data_lines.Text()[6:]
+			if 7 <= len(data_lines.Text()) {
+				data.X_bcc = data_lines.Text()[7:]
 			} else {
 				data.X_bcc = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-Folder:") {
-			if 9 <= len(data_lines.Text()) {
-				data.X_Folder = data_lines.Text()[9:]
+			if 10 <= len(data_lines.Text()) {
+				data.X_Folder = data_lines.Text()[10:]
 			} else {
 				data.X_Folder = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-Origin:") {
-			if 9 <= len(data_lines.Text()) {
-				data.X_Origin = data_lines.Text()[9:]
+			if 10 <= len(data_lines.Text()) {
+				data.X_Origin = data_lines.Text()[10:]
 			} else {
 				data.X_Origin = ""
 			}
 		} else if strings.Contains(data_lines.Text(), "X-FileName:") {
-			if 9 <= len(data_lines.Text()) {
-				data.X_FileName = data_lines.Text()[9:]
+			if 12 <= len(data_lines.Text()) {
+				data.X_FileName = data_lines.Text()[12:]
 			} else {
 				data.X_FileName = ""
 			}
