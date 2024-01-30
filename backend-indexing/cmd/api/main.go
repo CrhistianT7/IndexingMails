@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -42,7 +43,9 @@ func main() {
 	args := os.Args
 
 	if len(args) > 2 && args[2] == "index" {
+		t0 := time.Now()
 		Index(args[1])
+		fmt.Printf("Total time is: %v\n", time.Since(t0))
 	}
 
 	server := &http.Server{
@@ -66,21 +69,25 @@ func Index(database string) {
 	for _, user := range userList {
 		folders_per_user := listSubFolders(database_path + user)
 		fmt.Println(user)
-		for _, folder := range folders_per_user {
-			mails_list, err := list_mails(database_path + user + "/" + folder + "/")
+		index_per_user(database_path, user, folders_per_user, &contador)
+	}
+}
+
+func index_per_user(database_path string, user string, folders_per_user []string, contador *int) {
+	for _, folder := range folders_per_user {
+		mails_list, err := list_mails(database_path + user + "/" + folder + "/")
+		if err != nil {
+			continue
+		}
+		for _, mail_file := range mails_list {
+			mail_content, err := os.Open(database_path + user + "/" + folder + "/" + mail_file)
 			if err != nil {
 				continue
 			}
-			for _, mail_file := range mails_list {
-				mail_content, err := os.Open(database_path + user + "/" + folder + "/" + mail_file)
-				if err != nil {
-					continue
-				}
-				lines := bufio.NewScanner(mail_content)
-				contador++
-				index_data(parse_data(lines, contador))
-				mail_content.Close()
-			}
+			lines := bufio.NewScanner(mail_content)
+			*contador++
+			index_data(parse_data(lines, *contador))
+			mail_content.Close()
 		}
 	}
 }
@@ -114,108 +121,53 @@ func list_mails(folder_name string) ([]string, error) {
 	return file_names, nil
 }
 
+func get_key_value(key string, current_line string) string {
+	index := len(key) + 1
+	if index <= len(current_line) {
+		return current_line[index:]
+	}
+	return ""
+}
+
 func parse_data(data_lines *bufio.Scanner, id int) models.Email {
 	var data models.Email
 
 	for data_lines.Scan() {
 		data.ID = strconv.Itoa(id)
-		if strings.Contains(data_lines.Text(), "Message-ID:") {
-			if 12 <= len(data_lines.Text()) {
-				data.Message_ID = data_lines.Text()[12:]
-			} else {
-				data.Message_ID = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Date:") {
-			if 6 <= len(data_lines.Text()) {
-				data.Date = data_lines.Text()[6:]
-			} else {
-				data.Date = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "From:") && !strings.Contains(data_lines.Text(), "X-From:") {
-			if 6 <= len(data_lines.Text()) {
-				data.From = data_lines.Text()[6:]
-			} else {
-				data.From = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "To:") && !strings.Contains(data_lines.Text(), "X-To:") {
-			if 4 <= len(data_lines.Text()) {
-				data.To = data_lines.Text()[4:]
-			} else {
-				data.To = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Subject:") {
-			if 9 <= len(data_lines.Text()) {
-				data.Subject = data_lines.Text()[9:]
-			} else {
-				data.Subject = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Cc:") {
-			if 4 <= len(data_lines.Text()) {
-				data.Cc = data_lines.Text()[4:]
-			} else {
-				data.Cc = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Mime-Version:") {
-			if 14 <= len(data_lines.Text()) {
-				data.Mime_Version = data_lines.Text()[14:]
-			} else {
-				data.Mime_Version = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Content-Type:") {
-			if 14 <= len(data_lines.Text()) {
-				data.Content_Type = data_lines.Text()[14:]
-			} else {
-				data.Content_Type = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "Content-Transfer-Encoding:") {
-			if 27 <= len(data_lines.Text()) {
-				data.Content_Transfer_Encoding = data_lines.Text()[27:]
-			} else {
-				data.Content_Transfer_Encoding = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-From:") {
-			if 8 <= len(data_lines.Text()) {
-				data.X_From = data_lines.Text()[8:]
-			} else {
-				data.X_From = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-To:") {
-			if 6 <= len(data_lines.Text()) {
-				data.X_To = data_lines.Text()[6:]
-			} else {
-				data.X_To = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-cc:") {
-			if 6 <= len(data_lines.Text()) {
-				data.X_cc = data_lines.Text()[6:]
-			} else {
-				data.X_cc = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-bcc:") {
-			if 7 <= len(data_lines.Text()) {
-				data.X_bcc = data_lines.Text()[7:]
-			} else {
-				data.X_bcc = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-Folder:") {
-			if 10 <= len(data_lines.Text()) {
-				data.X_Folder = data_lines.Text()[10:]
-			} else {
-				data.X_Folder = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-Origin:") {
-			if 10 <= len(data_lines.Text()) {
-				data.X_Origin = data_lines.Text()[10:]
-			} else {
-				data.X_Origin = ""
-			}
-		} else if strings.Contains(data_lines.Text(), "X-FileName:") {
-			if 12 <= len(data_lines.Text()) {
-				data.X_FileName = data_lines.Text()[12:]
-			} else {
-				data.X_FileName = ""
-			}
-		} else {
+		switch {
+		case strings.Contains(data_lines.Text(), "Message-ID:"):
+			data.Message_ID = get_key_value("Message-ID:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Date:"):
+			data.Date = get_key_value("Date:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "From:") && !strings.Contains(data_lines.Text(), "X-From:"):
+			data.From = get_key_value("From:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "To:") && !strings.Contains(data_lines.Text(), "X-To:"):
+			data.To = get_key_value("To:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Subject:"):
+			data.Subject = get_key_value("Subject:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Cc:"):
+			data.Cc = get_key_value("Cc:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Mime-Version:"):
+			data.Mime_Version = get_key_value("Mime-Version:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Content-Type:"):
+			data.Content_Type = get_key_value("Content-Type:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "Content-Transfer-Encoding:"):
+			data.Content_Transfer_Encoding = get_key_value("Content-Transfer-Encoding:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-From:"):
+			data.X_From = get_key_value("X-From:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-To:"):
+			data.X_To = get_key_value("X-To:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-cc:"):
+			data.X_cc = get_key_value("X-cc:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-bcc:"):
+			data.X_bcc = get_key_value("X-bcc:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-Folder:"):
+			data.X_Folder = get_key_value("X-Folder:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-Origin:"):
+			data.X_Origin = get_key_value("X-Origin:", data_lines.Text())
+		case strings.Contains(data_lines.Text(), "X-FileName:"):
+			data.X_FileName = get_key_value("X-FileName:", data_lines.Text())
+		default:
 			data.Body = data.Body + data_lines.Text()
 		}
 	}
